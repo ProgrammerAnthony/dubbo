@@ -214,6 +214,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
 
     @Override
     public void export() {
+        //暴露服务
         if (this.exported) {
             return;
         }

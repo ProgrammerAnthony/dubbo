@@ -39,16 +39,21 @@ import java.util.stream.Collectors;
 
 /**
  * A bean factory for internal sharing.
+ * 对dubbo构建的bean进行管理
  */
 public class ScopeBeanFactory {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(ScopeBeanFactory.class);
-
+    //组成树
     private final ScopeBeanFactory parent;
+    //extension获取组件，有了SPI机制使用的权限
     private ExtensionAccessor extensionAccessor;
     private List<ExtensionPostProcessor> extensionPostProcessors;
+    //每个class都有AtomicInteger的计数
     private Map<Class, AtomicInteger> beanNameIdCounterMap = new ConcurrentHashMap<>();
+    //bean信息
     private List<BeanInfo> registeredBeanInfos = new CopyOnWriteArrayList<>();
+    //初始化策略逻辑
     private InstantiationStrategy instantiationStrategy;
     private AtomicBoolean destroyed = new AtomicBoolean();
 

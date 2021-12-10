@@ -51,7 +51,7 @@ public class FrameworkModel extends ScopeModel {
     private volatile static FrameworkModel defaultInstance;
 
     private volatile ApplicationModel defaultAppModel;
-
+    //单例集合
     private static List<FrameworkModel> allInstances = new CopyOnWriteArrayList<>();
 
     private List<ApplicationModel> applicationModels = new CopyOnWriteArrayList<>();

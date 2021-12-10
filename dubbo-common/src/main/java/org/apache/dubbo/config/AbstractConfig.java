@@ -373,6 +373,7 @@ public abstract class AbstractConfig implements Serializable {
         return result;
     }
 
+    //model组件体系包含ApplicationModel和ModuleModel
     public ApplicationModel getApplicationModel() {
         if (scopeModel instanceof ApplicationModel) {
             return (ApplicationModel) scopeModel;
@@ -571,8 +572,9 @@ public abstract class AbstractConfig implements Serializable {
         refreshed.set(true);
         try {
             // check and init before do refresh
+            //增加了providerConfig增加了provider的服务实例
             preProcessRefresh();
-
+            //拿到核心配置信息
             Environment environment = getScopeModel().getModelEnvironment();
             List<Map<String, String>> configurationMaps = environment.getConfigurationMaps();
 
@@ -606,10 +608,11 @@ public abstract class AbstractConfig implements Serializable {
                     " with prefix [" + preferredPrefix +
                     "], extracted props: " + subProperties);
             }
-
+            //配置信息使用反射注入
             assignProperties(this, environment, subProperties, subPropsConfiguration);
 
             // process extra refresh of sub class, e.g. refresh method configs
+            //方法和参数的MethodConfig，ArgumentConfig添加解析
             processExtraRefresh(preferredPrefix, subPropsConfiguration);
 
         } catch (Exception e) {

@@ -305,6 +305,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
     @Override
     protected void processExtraRefresh(String preferredPrefix, InmemoryConfiguration subPropsConfiguration) {
         if (StringUtils.hasText(interfaceName)) {
+            //拿到服务接口
             Class<?> interfaceClass = null;
             try {
                 interfaceClass = ClassUtils.forName(interfaceName);
@@ -318,12 +319,14 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
 
             // Auto create MethodConfig/ArgumentConfig according to config props
             Map<String, String> configProperties = subPropsConfiguration.getProperties();
+            //对外暴露的服务接口的暴露方法
             Method[] methods = interfaceClass.getMethods();
             for (Method method : methods) {
                 if (ConfigurationUtils.hasSubProperties(configProperties, method.getName())) {
                     MethodConfig methodConfig = getMethodByName(method.getName());
                     // Add method config if not found
                     if (methodConfig == null) {
+                        //每个方法对应一个MethodConfig，方法名称，重试，sticky等
                         methodConfig = new MethodConfig();
                         methodConfig.setName(method.getName());
                         this.addMethod(methodConfig);
@@ -334,7 +337,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                     for (int i = 0; i < arguments.length; i++) {
                         if (getArgumentByIndex(methodConfig, i) == null &&
                             hasArgumentConfigProps(configProperties, methodConfig.getName(), i)) {
-
+                            //方法对应参数， 包含顺序
                             ArgumentConfig argumentConfig = new ArgumentConfig();
                             argumentConfig.setIndex(i);
                             methodConfig.addArgument(argumentConfig);
@@ -354,7 +357,7 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
                 Class<?> finalInterfaceClass = interfaceClass;
                 List<MethodConfig> validMethodConfigs = methodConfigs.stream().filter(methodConfig -> {
                     methodConfig.setParentPrefix(preferredPrefix);
-                    methodConfig.setScopeModel(getScopeModel());
+                    methodConfig.setScopeModel(getScopeModel()); //关联model组件
                     methodConfig.refresh();
                     // verify method config
                     return verifyMethodConfig(methodConfig, finalInterfaceClass, ignoreInvalidMethodConfig);

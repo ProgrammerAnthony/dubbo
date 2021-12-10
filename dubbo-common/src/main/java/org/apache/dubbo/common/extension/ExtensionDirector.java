@@ -32,11 +32,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <p>The way to find and create an extension instance is similar to Java classloader.</p>
  */
 public class ExtensionDirector implements ExtensionAccessor {
-
+    //class对象对应的extensionloader缓存
     private final ConcurrentMap<Class<?>, ExtensionLoader<?>> extensionLoadersMap = new ConcurrentHashMap<>(64);
     private final ConcurrentMap<Class<?>, ExtensionScope> extensionScopeMap = new ConcurrentHashMap<>(64);
     private ExtensionDirector parent;
     private final ExtensionScope scope;
+    //后处理器
     private List<ExtensionPostProcessor> extensionPostProcessors = new ArrayList<>();
     private ScopeModel scopeModel;
     private AtomicBoolean destroyed = new AtomicBoolean();
@@ -76,11 +77,12 @@ public class ExtensionDirector implements ExtensionAccessor {
                 ") is not an extension, because it is NOT annotated with @" + SPI.class.getSimpleName() + "!");
         }
 
-        // 1. find in local cache
+        // 1. find in local cache 缓存搜索
         ExtensionLoader<T> loader = (ExtensionLoader<T>) extensionLoadersMap.get(type);
 
         ExtensionScope scope = extensionScopeMap.get(type);
         if (scope == null) {
+            //从class中拿到对应的SPI注解
             SPI annotation = type.getAnnotation(SPI.class);
             scope = annotation.scope();
             extensionScopeMap.put(type, scope);
@@ -88,10 +90,12 @@ public class ExtensionDirector implements ExtensionAccessor {
 
         if (loader == null && scope == ExtensionScope.SELF) {
             // create an instance in self scope
+            //通过scopeModel，class和director创建一个extensionloader并加入map
             loader = createExtensionLoader0(type);
         }
 
         // 2. find in parent
+        //loader为null，并且不是self，从父组件中查找
         if (loader == null) {
             if (this.parent != null) {
                 loader = this.parent.getExtensionLoader(type);

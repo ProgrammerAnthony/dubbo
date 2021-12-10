@@ -43,6 +43,7 @@ public class InstantiationStrategy {
         this.scopeModelAccessor = scopeModelAccessor;
     }
 
+    //构建extension的实例
     public <T> T instantiate(Class<T> type) throws ReflectiveOperationException {
 
         // should not use default constructor directly, maybe also has another constructor matched scope model arguments

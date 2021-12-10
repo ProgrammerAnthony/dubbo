@@ -55,7 +55,7 @@ public class DefaultModuleDeployer extends AbstractDeployer<ModuleModel> impleme
     private final List<CompletableFuture<?>> asyncExportingFutures = new ArrayList<>();
 
     private final List<CompletableFuture<?>> asyncReferringFutures = new ArrayList<>();
-
+    //已经完成发布的服务实例
     private List<ServiceConfigBase<?>> exportedServices = new ArrayList<>();
 
     private ModuleModel moduleModel;
@@ -65,7 +65,7 @@ public class DefaultModuleDeployer extends AbstractDeployer<ModuleModel> impleme
     private final ModuleConfigManager configManager;
 
     private final SimpleReferenceCache referenceCache;
-
+    //父组件
     private ApplicationDeployer applicationDeployer;
     private CompletableFuture startFuture;
     private Boolean background;
@@ -463,6 +463,7 @@ public class DefaultModuleDeployer extends AbstractDeployer<ModuleModel> impleme
      */
     @Override
     public void prepare() {
+        //module是application的下一级，application是framework的下一级
         applicationDeployer.initialize();
         this.initialize();
     }

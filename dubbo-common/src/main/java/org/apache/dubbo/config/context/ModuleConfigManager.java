@@ -49,6 +49,7 @@ import static org.apache.dubbo.config.AbstractConfig.getTagName;
 
 /**
  * Manage configs of module
+ * 服务相关配置数据
  */
 public class ModuleConfigManager extends AbstractConfigManager {
 

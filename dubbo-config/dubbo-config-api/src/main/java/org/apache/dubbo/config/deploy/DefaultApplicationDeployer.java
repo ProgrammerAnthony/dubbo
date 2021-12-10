@@ -192,16 +192,16 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
             if (initialized.get()) {
                 return;
             }
-            // register shutdown hook
+            // register shutdown hook 关闭钩子函数
             registerShutdownHook();
-
+            //配置中心链接，比如apollo，zk等，实现dynamicconfiguration
             startConfigCenter();
 
             loadApplicationConfigs();
 
             initModuleDeployers();
 
-            // @since 2.7.8
+            // @since 2.7.8 元数据管理，注册中心可以当作元数据中心
             startMetadataCenter();
 
             initMetadataService();
@@ -232,6 +232,7 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
         configManager.loadConfigs();
     }
 
+    ////配置中心链接，比如apollo，zk等，实现dynamicconfiguration
     private void startConfigCenter() {
 
         // load application config
@@ -244,7 +245,7 @@ public class DefaultApplicationDeployer extends AbstractDeployer<ApplicationMode
 
         // load config centers
         configManager.loadConfigsOfTypeFromProps(ConfigCenterConfig.class);
-
+        //注册中心当作配置中心
         useRegistryAsConfigCenterIfNecessary();
 
         // check Config Center

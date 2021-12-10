@@ -27,7 +27,7 @@ import static org.apache.dubbo.common.constants.CommonConstants.EXPORT_THREAD_NU
 
 /**
  * The service provider default configuration
- *
+ * provider服务实例对应的配置
  * @export
  * @see org.apache.dubbo.config.ProtocolConfig
  * @see ServiceConfigBase
@@ -120,6 +120,7 @@ public class ProviderConfig extends AbstractServiceConfig {
 
     /**
      * Thread dispatching mode
+     * 线程分发策略
      */
     private String dispatcher;
 

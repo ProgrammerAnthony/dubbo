@@ -37,11 +37,14 @@ public class ModuleModel extends ScopeModel {
     private static final Logger logger = LoggerFactory.getLogger(ModuleModel.class);
 
     public static final String NAME = "ModuleModel";
-
+    //引用，并将ApplicationModel作为父组件
     private final ApplicationModel applicationModel;
     private ModuleEnvironment moduleEnvironment;
+    //存储服务数据
     private ModuleServiceRepository serviceRepository;
+    //服务相关配置数据
     private ModuleConfigManager moduleConfigManager;
+    //管理模块的生命周期
     private ModuleDeployer deployer;
 
     public ModuleModel(ApplicationModel applicationModel) {
@@ -49,6 +52,7 @@ public class ModuleModel extends ScopeModel {
     }
 
     public ModuleModel(ApplicationModel applicationModel, boolean isInternal) {
+        //设置scope为MODULE
         super(applicationModel, ExtensionScope.MODULE);
         Assert.notNull(applicationModel, "ApplicationModel can not be null");
         this.applicationModel = applicationModel;
@@ -77,7 +81,7 @@ public class ModuleModel extends ScopeModel {
         this.moduleConfigManager.initialize();
 
         initModuleExt();
-
+        //ScopeModelInitializer的ExtensionLoader
         ExtensionLoader<ScopeModelInitializer> initializerExtensionLoader = this.getExtensionLoader(ScopeModelInitializer.class);
         Set<ScopeModelInitializer> initializers = initializerExtensionLoader.getSupportedExtensionInstances();
         for (ScopeModelInitializer initializer : initializers) {

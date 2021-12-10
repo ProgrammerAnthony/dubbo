@@ -104,7 +104,7 @@ public class ExtensionLoader<T> {
     private final ConcurrentMap<Class<?>, Object> extensionInstances = new ConcurrentHashMap<>(64);
 
     private final Class<?> type;
-
+  //扩展实例注入器
     private final ExtensionInjector injector;
 
     private final ConcurrentMap<Class<?>, String> cachedNames = new ConcurrentHashMap<>();
@@ -172,9 +172,12 @@ public class ExtensionLoader<T> {
         this.type = type;
         this.extensionDirector = extensionDirector;
         this.extensionPostProcessors = extensionDirector.getExtensionPostProcessors();
+        //构建extension的实例策略
         initInstantiationStrategy();
+        //extension机制的依赖注入机制
         this.injector = (type == ExtensionInjector.class ? null : extensionDirector.getExtensionLoader(ExtensionInjector.class)
             .getAdaptiveExtension());
+        //比较组件
         this.activateComparator = new ActivateComparator(extensionDirector);
         this.scopeModel = scopeModel;
     }
@@ -516,6 +519,7 @@ public class ExtensionLoader<T> {
     /**
      * Find the extension with the given name. If the specified name is not found, then {@link IllegalStateException}
      * will be thrown.
+     * name为SPI中获取的名字
      */
     @SuppressWarnings("unchecked")
     public T getExtension(String name) {
@@ -538,12 +542,15 @@ public class ExtensionLoader<T> {
         if (!wrap) {
             cacheKey += "_origin";
         }
+        //根据名称获取一下holder，并把holder放入缓存map
+        //每一个实例都有一个holder
         final Holder<Object> holder = getOrCreateHolder(cacheKey);
         Object instance = holder.get();
         if (instance == null) {
             synchronized (holder) {
                 instance = holder.get();
                 if (instance == null) {
+                    //创建Extension
                     instance = createExtension(name, wrap);
                     holder.set(instance);
                 }
@@ -755,6 +762,7 @@ public class ExtensionLoader<T> {
         try {
             T instance = (T) extensionInstances.get(clazz);
             if (instance == null) {
+                //反射技术创建extension
                 extensionInstances.putIfAbsent(clazz, createExtensionInstance(clazz));
                 instance = (T) extensionInstances.get(clazz);
                 instance = postProcessBeforeInitialization(instance, name);
@@ -762,7 +770,7 @@ public class ExtensionLoader<T> {
                 instance = postProcessAfterInitialization(instance, name);
             }
 
-            if (wrap) {
+            if (wrap) { //默认为true
                 List<Class<?>> wrapperClassesList = new ArrayList<>();
                 if (cachedWrapperClasses != null) {
                     wrapperClassesList.addAll(cachedWrapperClasses);
@@ -792,6 +800,7 @@ public class ExtensionLoader<T> {
     }
 
     private Object createExtensionInstance(Class<?> type) throws ReflectiveOperationException {
+//        构建extension的实例
         return instantiationStrategy.instantiate(type);
     }
 
@@ -907,6 +916,7 @@ public class ExtensionLoader<T> {
             synchronized (cachedClasses) {
                 classes = cachedClasses.get();
                 if (classes == null) {
+                    //通过配置文件读取解析，通过类的短名称获取对应的class
                     classes = loadExtensionClasses();
                     cachedClasses.set(classes);
                 }
@@ -936,6 +946,7 @@ public class ExtensionLoader<T> {
         return extensionClasses;
     }
 
+    //类资源的加载过程
     private void loadDirectory(Map<String, Class<?>> extensionClasses, LoadingStrategy strategy, String type) {
         loadDirectory(extensionClasses, strategy.directory(), type, strategy.preferExtensionClassLoader(),
             strategy.overridden(), strategy.excludedPackages(), strategy.onlyExtensionClassLoaderPackages());

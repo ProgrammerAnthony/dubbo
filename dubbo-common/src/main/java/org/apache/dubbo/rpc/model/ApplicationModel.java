@@ -57,8 +57,11 @@ public class ApplicationModel extends ScopeModel {
     private final List<ModuleModel> moduleModels = new CopyOnWriteArrayList<>();
     private final List<ModuleModel> pubModuleModels = new CopyOnWriteArrayList<>();
     private Environment environment;
+    //服务配置
     private ConfigManager configManager;
+    //服务数据相关存储
     private ServiceRepository serviceRepository;
+    //application层级的生命周期管理
     private ApplicationDeployer deployer;
 
     private final FrameworkModel frameworkModel;
@@ -213,7 +216,7 @@ public class ApplicationModel extends ScopeModel {
         super.initialize();
         internalModule = new ModuleModel(this, true);
         this.serviceRepository = new ServiceRepository(this);
-
+        //SPI机制ApplicationInitListener
         ExtensionLoader<ApplicationInitListener> extensionLoader = this.getExtensionLoader(ApplicationInitListener.class);
         Set<String> listenerNames = extensionLoader.getSupportedExtensions();
         for (String listenerName : listenerNames) {

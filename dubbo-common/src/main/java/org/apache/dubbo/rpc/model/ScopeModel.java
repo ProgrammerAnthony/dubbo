@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+//ExtensionAccessor获取SPI体系相关，具有获取SPI扩展机制的能力
 public abstract class ScopeModel implements ExtensionAccessor {
     protected static final Logger LOGGER = LoggerFactory.getLogger(ScopeModel.class);
 
@@ -50,6 +51,7 @@ public abstract class ScopeModel implements ExtensionAccessor {
      *     <li>1.2.1</li>
      *     FrameworkModel (index=1) -> ApplicationModel (index=2) -> ModuleModel (index=1, first user module)
      * </ol>
+     * 根据名称获取对应的module组件体系
      */
     private String internalId;
 
@@ -61,10 +63,11 @@ public abstract class ScopeModel implements ExtensionAccessor {
     private String desc;
 
     private Set<ClassLoader> classLoaders;
-
+    //树型结构
     private final ScopeModel parent;
+    //不同范围
     private final ExtensionScope scope;
-
+    //用于extension SPI管理
     private ExtensionDirector extensionDirector;
 
     private ScopeBeanFactory beanFactory;
@@ -88,8 +91,11 @@ public abstract class ScopeModel implements ExtensionAccessor {
      * </ol>
      */
     protected void initialize() {
+        //SPI核心机制管理的manager
         this.extensionDirector = new ExtensionDirector(parent != null ? parent.getExtensionDirector() : null, scope, this);
+        //回调和后处理
         this.extensionDirector.addExtensionPostProcessor(new ScopeModelAwareExtensionProcessor(this));
+       //dubbo内部的bean容器
         this.beanFactory = new ScopeBeanFactory(parent != null ? parent.getBeanFactory() : null, extensionDirector);
         this.destroyListeners = new LinkedList<>();
         this.attributes = new ConcurrentHashMap<>();
@@ -105,6 +111,7 @@ public abstract class ScopeModel implements ExtensionAccessor {
     public void destroy() {
         if (destroyed.compareAndSet(false, true)) {
             try {
+                //回调监听的思想
                 onDestroy();
                 HashSet<ClassLoader> copyOfClassLoaders = new HashSet<>(classLoaders);
                 for (ClassLoader classLoader : copyOfClassLoaders) {
