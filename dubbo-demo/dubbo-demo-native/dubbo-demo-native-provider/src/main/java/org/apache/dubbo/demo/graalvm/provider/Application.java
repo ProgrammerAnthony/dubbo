@@ -70,7 +70,9 @@ public class Application {
 
     private static void startWithExport() throws InterruptedException {
         ServiceConfig<DemoServiceImpl> service = new ServiceConfig<>();
+        //设置对应接口DemoService
         service.setInterface(DemoService.class);
+        //设置DemoService的接口实现
         service.setRef(new DemoServiceImpl());
 
         ApplicationConfig applicationConfig = new ApplicationConfig("dubbo-demo-api-provider");
