@@ -21,6 +21,7 @@ import org.apache.dubbo.rpc.model.ScopeModel;
 import java.util.concurrent.Future;
 
 /**
+ * 生命周期管理
  */
 public interface Deployer<E extends ScopeModel> {
 

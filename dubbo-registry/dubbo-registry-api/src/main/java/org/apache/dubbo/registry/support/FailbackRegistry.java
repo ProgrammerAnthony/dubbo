@@ -202,6 +202,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
         removeFailedUnregistered(url);
         try {
             // Sending a registration request to the server side
+            //默认是zookeeper实现的注册
             doRegister(url);
         } catch (Exception e) {
             Throwable t = e;
@@ -221,6 +222,7 @@ public abstract class FailbackRegistry extends AbstractRegistry {
             }
 
             // Record a failed registration request to a failed list, retry regularly
+            //记录失败的url方便重试
             addFailedRegistered(url);
         }
     }

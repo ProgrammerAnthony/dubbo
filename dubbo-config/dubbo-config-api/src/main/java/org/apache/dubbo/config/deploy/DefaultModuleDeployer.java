@@ -47,6 +47,7 @@ import java.util.concurrent.Future;
 
 /**
  * Export/refer services of module
+ * 用于处理module的引用（客户端）和暴露（服务端）
  */
 public class DefaultModuleDeployer extends AbstractDeployer<ModuleModel> implements ModuleDeployer {
 
@@ -113,7 +114,7 @@ public class DefaultModuleDeployer extends AbstractDeployer<ModuleModel> impleme
                 // compatible with old usages
                 background = isExportBackground() || isReferBackground();
             }
-
+            //AtomicBoolean标记开始，可以学习的细节
             initialized.set(true);
             if (logger.isInfoEnabled()) {
                 logger.info(getIdentifier() + " has been initialized!");
@@ -134,11 +135,11 @@ public class DefaultModuleDeployer extends AbstractDeployer<ModuleModel> impleme
 
             onModuleStarting();
 
-            // initialize
+            // 重要初始化
             applicationDeployer.initialize();
             initialize();
 
-            // export services
+            // 暴露服务
             exportServices();
 
             // prepare application instance
@@ -238,6 +239,7 @@ public class DefaultModuleDeployer extends AbstractDeployer<ModuleModel> impleme
     }
 
     private void onModuleStarting() {
+        //回调listener
         setStarting();
         startFuture = new CompletableFuture();
         logger.info(getIdentifier() + " is starting.");

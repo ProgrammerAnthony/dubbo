@@ -309,7 +309,7 @@ public class DubboProtocol extends AbstractProtocol {
 
             }
         }
-
+        //打开并监听指定端口
         openServer(url);
         optimizeSerialization(url);
 

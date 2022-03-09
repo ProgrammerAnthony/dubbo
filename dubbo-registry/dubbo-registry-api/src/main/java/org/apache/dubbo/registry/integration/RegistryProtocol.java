@@ -217,6 +217,7 @@ public class RegistryProtocol implements Protocol, ScopeModelAware {
             registered));
     }
 
+    //远程服务实例发布
     @Override
     public <T> Exporter<T> export(final Invoker<T> originInvoker) throws RpcException {
         URL registryUrl = getRegistryUrl(originInvoker);

@@ -214,7 +214,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
 
     @Override
     public void export() {
-        //暴露服务
+        //volatile关键字记录，暴露服务
         if (this.exported) {
             return;
         }
@@ -258,6 +258,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
         List<URL> exportedURLs = this.getExportedUrls();
         exportedURLs.forEach(url -> {
             if (url.getParameters().containsKey(SERVICE_NAME_MAPPING_KEY)) {
+                //MetadataServiceNameMapping实现类做元数据上报
                 ServiceNameMapping serviceNameMapping = ServiceNameMapping.getDefaultExtension(getScopeModel());
                 try {
                     boolean succeeded = serviceNameMapping.map(url);
@@ -369,6 +370,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void doExportUrls() {
         ModuleServiceRepository repository = getScopeModel().getServiceRepository();
+        //将对应的接口实现类注册到repository
         ServiceDescriptor serviceDescriptor = repository.registerService(getInterfaceClass());
         providerModel = new ProviderModel(getUniqueServiceName(),
             ref,
@@ -387,6 +389,7 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
                     .orElse(path), group, version);
             // In case user specified path, register service one more time to map it to path.
             repository.registerService(pathKey, interfaceClass);
+            //发布核心流程
             doExportUrlsFor1Protocol(protocolConfig, registryURLs);
         }
     }
@@ -565,13 +568,16 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
         if (!SCOPE_NONE.equalsIgnoreCase(scope)) {
 
             // export to local if the config is not remote (export to remote only when config is remote)
+            // 暴露到本地
             if (!SCOPE_REMOTE.equalsIgnoreCase(scope)) {
                 exportLocal(url);
             }
 
             // export to remote if the config is not local (export to local only when config is local)
+            //暴露到远程
             if (!SCOPE_LOCAL.equalsIgnoreCase(scope)) {
                 url = exportRemote(url, registryURLs);
+                //元数据上报
                 MetadataUtils.publishServiceDefinition(url);
             }
 
@@ -633,11 +639,15 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void doExportUrl(URL url, boolean withMetaData) {
+        //动态代理生成invoker。底层一般分为jdk动态代理和javaassist构建代理
+        //ref变量就是泛型参数
         Invoker<?> invoker = proxyFactory.getInvoker(ref, (Class) interfaceClass, url);
         if (withMetaData) {
             invoker = new DelegateProviderMetaDataInvoker(invoker, this);
         }
+        //默认zookeeper的暴露逻辑
         Exporter<?> exporter = protocolSPI.export(invoker);
+        //服务暴露是将服务invoker添加到缓存/注册中心的过程
         exporters.add(exporter);
     }
 

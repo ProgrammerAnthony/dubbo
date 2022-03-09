@@ -40,7 +40,7 @@ import static org.apache.dubbo.config.Constants.ON_THROW_METHOD_PARAMETER_KEY;
 
 /**
  * The method configuration
- *
+ * 每一个方法对应一个methodConfig
  * @export
  */
 public class MethodConfig extends AbstractMethodConfig {
